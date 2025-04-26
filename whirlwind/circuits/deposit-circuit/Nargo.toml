@@ -1,1 +1,10 @@
+[package]
+name = "deposit"
+version = "0.1.0"
+
+[dependencies]
+# noir’s std lib provides blake2s and merkle_tree modules
+
+[profile.release]
+# optimize for proving speed
 
