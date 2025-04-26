@@ -1,10 +1,15 @@
+type = "nargo.toml"
+version = "0.1"
+
 [package]
-name = "deposit"
+name = "deposit_circuit"
 version = "0.1.0"
 
 [dependencies]
-# noir’s std lib provides blake2s and merkle_tree modules
+barretenberg = { git = "https://github.com/AztecProtocol/barretenberg.git" }
 
-[profile.release]
-# optimize for proving speed
+[build]
+target = "acir"     # or "ultra" if you’re on the latest backend
+prove = true
+
 
