@@ -1,4 +1,2 @@
-[prover]
+[prove]
 backend = "barretenberg"
-log_level = "info"
-
