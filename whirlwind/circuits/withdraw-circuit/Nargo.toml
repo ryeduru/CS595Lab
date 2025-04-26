@@ -1,15 +1,11 @@
-type = "nargo.toml"
-version = "0.1"
+# Tell Nargo this is a binary-style ACIR generator
+type = "bin"
+compiler_version = "1.0.0-beta.3"
 
 [package]
-name = "deposit_circuit"
+name = "withdraw_circuit"
 version = "0.1.0"
 
-[dependencies]
-barretenberg = { git = "https://github.com/AztecProtocol/barretenberg.git" }
-
 [build]
-target = "acir"     # or "ultra" if you’re on the latest backend
+target = "acir"
 prove = true
-
-
