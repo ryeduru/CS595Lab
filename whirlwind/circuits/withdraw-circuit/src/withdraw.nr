@@ -1,28 +1,30 @@
 // withdraw.nr
-// Public inputs: root, id (nullifier)
-// Private inputs: r, index, path, indices
+// A ZK proof that a commitment exists in the tree
 
-const DEPTH = 8;
+use barretenberg::pedersen::pedersen;
+use barretenberg::merkle::{merkle_root, MerklePath};
 
-import "std/hash/blake2s.nr" as blake2s;
-import "std/merkle_tree.nr" as merkle;
-
-fn main(
-  root: Field,
-  id: Field
-) {
-    // Private
-    r: Field  = pubonly();
-    index: Field = pubonly();
-    path: [Field; DEPTH] = pubonly();
-    indices: [u8; DEPTH] = pubonly();
-
-    // 1) recompute commitment = H(id || r)
-    let commitment = blake2s::hash([id, r]);
-
-    // 2) prove that commitment ∈ tree with given root
-    merkle::verify_membership(commitment, index.to_u32(), path, indices, root);
-
-    // nullifier is just `id`, which matches public input
+struct PrivateInputs {
+    id: Field,
+    r: Field,
+    path: MerklePath<8>,
+}
+struct PublicInputs {
+    root: Field,
+    nullifier: Field,
 }
 
+fn main(priv: PrivateInputs, pub_in: PublicInputs) {
+    // Recompute commitment and nullifier
+    let commitment = pedersen([priv.id, priv.r]);
+    let computed_nullifier = priv.id;      // id itself is the nullifier
+    computed_nullifier.assert_equal(pub_in.nullifier);
+
+    // Check the path leads to root
+    let path_root = merkle_root(
+        commitment,
+        priv.path.elements,
+        priv.path.indices,
+    );
+    path_root.assert_equal(pub_in.root);
+}
