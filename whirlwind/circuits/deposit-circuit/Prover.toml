@@ -1,4 +1,3 @@
-[prover]
+[prove]
+# use the Barretenberg backend
 backend = "barretenberg"
-log_level = "info"
-
