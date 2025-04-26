@@ -1,8 +1,15 @@
+type = "nargo.toml"
+version = "0.1"
+
 [package]
-name = "withdraw"
+name = "deposit_circuit"
 version = "0.1.0"
 
 [dependencies]
+barretenberg = { git = "https://github.com/AztecProtocol/barretenberg.git" }
 
-[profile.release]
+[build]
+target = "acir"     # or "ultra" if you’re on the latest backend
+prove = true
+
 
