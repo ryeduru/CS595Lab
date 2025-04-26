@@ -1,4 +1,3 @@
-# Tell Nargo this is a binary-style ACIR generator
 type = "bin"
 compiler_version = "1.0.0-beta.3"
 
@@ -7,6 +6,5 @@ name = "deposit_circuit"
 version = "0.1.0"
 
 [build]
-# produce ACIR and vk files in target/
 target = "acir"
 prove = true
