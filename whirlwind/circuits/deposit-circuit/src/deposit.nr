@@ -1,25 +1,24 @@
-// deposit.nr
-// Private inputs: id, r, old_path
-// Public inputs: old_root, new_root, commitment, index
+// circuits/deposit-circuit/src/deposit.nr
 
 import std::hash::pedersen::{pedersen_hash};
 import std::merkle::{merkle_update};
 
+// note camelCase on oldPath, and pub on the last four inputs in this order
 fn main(
     id: Field,
     r: Field,
-    old_path: [Field; 8],     // adjust depth if needed
-    index: Field,
-    old_root: Field,
-    new_root: Field,
-    commitment: Field
+    oldPath: [Field; 8],         // matches the demo’s `oldPath` key
+
+    oldRoot: pub Field,          // matches `oldRoot`
+    newRoot: pub Field,          // matches `newRoot`
+    commitment: pub Field,       // matches `commitment`
+    index: pub Field             // matches `index`
 ) {
-    // 1) Check commitment = PedersenHash(id, r)
+    // 1) Check your Pedersen commitment
     let computed = pedersen_hash([id, r]);
     computed.assert_eq(commitment);
 
-    // 2) Check that inserting `commitment` at `index` in tree with root `old_root`
-    //    yields `new_root`, given `old_path`
-    let computed_root = merkle_update(old_root, commitment, index, old_path);
-    computed_root.assert_eq(new_root);
+    // 2) Verify update of the Merkle root
+    let updated = merkle_update(oldRoot, commitment, index, oldPath);
+    updated.assert_eq(newRoot);
 }
