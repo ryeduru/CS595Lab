@@ -1,24 +1,19 @@
-// circuits/deposit-circuit/src/deposit.nr
-
 import std::hash::pedersen::{pedersen_hash};
-import std::merkle::{merkle_update};
+import std::merkle::{merkle_verify};
 
-// note camelCase on oldPath, and pub on the last four inputs in this order
+// Must match your Withdraw TOML keys & order:
+//   r, index, hashpath, root, id
 fn main(
-    id: Field,
     r: Field,
-    oldPath: [Field; 8],         // matches the demo’s `oldPath` key
+    index: Field,
+    hashpath: [Field; 8],   // ⬅️ key=`hashpath`
 
-    oldRoot: pub Field,          // matches `oldRoot`
-    newRoot: pub Field,          // matches `newRoot`
-    commitment: pub Field,       // matches `commitment`
-    index: pub Field             // matches `index`
+    root: pub Field,        // ⬅️ key=`root`
+    id: pub Field           // ⬅️ key=`id`
 ) {
-    // 1) Check your Pedersen commitment
-    let computed = pedersen_hash([id, r]);
-    computed.assert_eq(commitment);
+    // recompute the commitment from the nullifier `id` and randomness `r`
+    let commitment = pedersen_hash([id, r]);
 
-    // 2) Verify update of the Merkle root
-    let updated = merkle_update(oldRoot, commitment, index, oldPath);
-    updated.assert_eq(newRoot);
+    // assert that commitment lives at `index` in tree with root `root`
+    merkle_verify(commitment, index, hashpath, root);
 }
