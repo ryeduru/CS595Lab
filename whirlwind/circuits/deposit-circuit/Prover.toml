@@ -1,3 +1,2 @@
-[prove]
-# use the Barretenberg backend
-backend = "barretenberg"
+[prover]
+circuit = "src/deposit.nr"
