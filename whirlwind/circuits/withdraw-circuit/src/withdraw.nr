@@ -1,22 +1,24 @@
-// withdraw.nr
-// Private inputs: r, index, path
-// Public inputs: root, id (nullifier)
+// circuits/deposit-circuit/src/deposit.nr
 
 import std::hash::pedersen::{pedersen_hash};
-import std::merkle::{merkle_verify};
+import std::merkle::{merkle_update};
 
+// note camelCase on oldPath, and pub on the last four inputs in this order
 fn main(
+    id: Field,
     r: Field,
-    index: Field,
-    path: [Field; 8],    // same tree depth
-    root: Field,
-    id: Field
+    oldPath: [Field; 8],         // matches the demo’s `oldPath` key
+
+    oldRoot: pub Field,          // matches `oldRoot`
+    newRoot: pub Field,          // matches `newRoot`
+    commitment: pub Field,       // matches `commitment`
+    index: pub Field             // matches `index`
 ) {
-    // Recompute commitment from nullifier id and randomness r
-    let commitment = pedersen_hash([id, r]);
+    // 1) Check your Pedersen commitment
+    let computed = pedersen_hash([id, r]);
+    computed.assert_eq(commitment);
 
-    // Verify that `commitment` lives in the tree at position `index`, yielding `root`
-    merkle_verify(commitment, index, path, root);
-
-    // (the circuit’s public output `id` is your nullifier)
+    // 2) Verify update of the Merkle root
+    let updated = merkle_update(oldRoot, commitment, index, oldPath);
+    updated.assert_eq(newRoot);
 }
